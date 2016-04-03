@@ -1,5 +1,7 @@
 # benchmarket-server
 
+Rudimantary server and ui for storing/browsing test benchmark graphs.
+
 ```bash
 npm install
 
