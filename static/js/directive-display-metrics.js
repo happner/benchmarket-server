@@ -9,9 +9,14 @@ DisplayMetrics = ['$http', '$rootScope', 'clientSession', '$timeout', function($
       var hidden = true;
 
       $rootScope.$on('toggleTests', function(ev, test) {
+
         if (test.id !== scope.test.id) return;
 
         hidden = !hidden;
+
+        if (hidden) {
+          scope.metrics = [];
+        }
 
         if (!hidden) {
           $http.get('/tests/' + test.id + '/metrics?whose=' + scope.filterUser.id + '&span=' + scope.setSpan, {
