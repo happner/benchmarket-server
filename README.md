@@ -1,5 +1,7 @@
 # benchmarket-server
 
+NB: No Organisations, repositories and users tables need reference to such a thing to support multiple organisations
+
 Rudimantary server and ui for storing/browsing test benchmark graphs.
 
 ```bash
