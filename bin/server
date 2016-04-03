@@ -139,7 +139,8 @@ app.get('/repos', authenticated(function(req, res, user, conn, done) {
     'FROM repositories ' +
     'INNER JOIN runs ' +
     'ON repositories.id = runs.repositories_id ' +
-    'AND runs.users_id = $1',
+    'AND runs.users_id = $1' +
+    'ORDER BY repositories.name',
   [req.query.whose], function(err, result) {
     done();
 
@@ -212,7 +213,7 @@ app.get('/repos', authenticated(function(req, res, user, conn, done) {
 
 app.get('/repos/:repo_id/testfiles', authenticated(function(req, res, user, conn, done) {
   //////// TODO whose
-  conn.query('SELECT * FROM testfiles WHERE repositories_id = $1',
+  conn.query('SELECT * FROM testfiles WHERE repositories_id = $1 ORDER BY testfiles.name',
   [req.params.repo_id],
   function(err, result) {
     done();
@@ -231,7 +232,7 @@ app.get('/repos/:repo_id/testfiles', authenticated(function(req, res, user, conn
 
 app.get('/testfiles/:testfile_id/tests', authenticated(function(req, res, user, conn, done) {
   //////// TODO whose
-  conn.query('SELECT * FROM tests WHERE testfiles_id = $1',
+  conn.query('SELECT * FROM tests WHERE testfiles_id = $1 ORDER BY tests.name',
   [req.params.testfile_id],
   function(err, result) {
     done();
