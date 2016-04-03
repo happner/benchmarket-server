@@ -5,10 +5,10 @@ CreateChart = function(scope, metric) {
 
 
   var margin = {
-    top: 3,
+    top: 8,
     right: 20,
     bottom: 30,
-    left: 50
+    left: 80
   };
 
   var width = 900 - margin.left - margin.right;
