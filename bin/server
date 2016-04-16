@@ -108,12 +108,17 @@ app.post('/benchmarks', authenticated(function(req, res, user, conn, done) {
     return done();
   }
 
-  if (typeof req.body[0].branchh === 'undefined') {
+  if (typeof req.body[0].branch === 'undefined') {
     res.statusCode = 400;
     res.end('old version of benchmarket, please upgrade');
     return done();
   }
 
+  if (typeof req.body[0].host === 'undefined') {
+    res.statusCode = 400;
+    res.end('old version of benchmarket, please upgrade');
+    return done();
+  }
 
   Promise.resolve(req.body).map(
     metric.store({
