@@ -25,7 +25,7 @@ exports.up = function(db, callback) {
     ')'),
 
     db.addIndex.bind(db, 'metrics', 'metrics_created_at_index', ['created_at'], false),
-    db.addIndex.bind(db, 'metrics', 'metrics_name_index_uniq', ['name'], false),
+    db.addIndex.bind(db, 'metrics', 'metrics_name_index', ['name'], false),
     db.addIndex.bind(db, 'metrics', 'metrics_tests_id_index', ['tests_id'], false),
     db.addIndex.bind(db, 'metrics', 'metrics_runs_id_index', ['runs_id'], false),
 
