@@ -95,6 +95,26 @@ app.post('/register', function(req, res) {
 
 
 app.post('/benchmarks', authenticated(function(req, res, user, conn, done) {
+
+  if (!Array.isArray(req.body)) {
+    res.statusCode = 400;
+    res.end();
+    return done();
+  }
+
+  if (req.body.length === 0) {
+    res.statusCode = 400;
+    res.end();
+    return done();
+  }
+
+  if (typeof req.body[0].branchh === 'undefined') {
+    res.statusCode = 400;
+    res.end('old version of benchmarket, please upgrade');
+    return done();
+  }
+
+
   Promise.resolve(req.body).map(
     metric.store({
       user: user,
@@ -110,7 +130,7 @@ app.post('/benchmarks', authenticated(function(req, res, user, conn, done) {
   .catch(function(err) {
     res.statusCode = 500;
     console.error('error in /benchmarks', err.stack);
-    res.end(err.stack);
+    res.end();
     done();
   });
 }));
