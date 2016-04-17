@@ -14,7 +14,7 @@ DisplayTests = ['$http', '$rootScope', 'clientSession', function($http, $rootSco
         hidden = !hidden;
 
         if (!hidden) {
-          $http.get('/testfiles/' + file.id + '/tests?whose=' + scope.filterUser.id, {
+          $http.get('/testfiles/' + file.id + '/tests?user=' + scope.filterUser.id + '&host=' + scope.filterHost.id, {
             headers: {
               Authorization: clientSession.getApiKey()
             }

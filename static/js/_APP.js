@@ -1,7 +1,7 @@
 angular.module('benchmarket', [])
 
 .directive('loginOut', LoginOut)
-.directive('filterUser', FilterUser)
+.directive('filterUserHost', FilterUserHost)
 .directive('filterRepository', FilterRepository)
 .directive('setSpan', SetSpan)
 .directive('displayTestfiles', DisplayTestfiles)

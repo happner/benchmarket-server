@@ -1,8 +1,8 @@
-FilterUser = ['$http', '$rootScope', 'clientSession', function($http, $rootScope, clientSession) {
+FilterUserHost = ['$http', '$rootScope', '$timeout', 'clientSession', function($http, $rootScope, $timeout, clientSession) {
   return {
     restrict: 'E',
 
-    templateUrl: '/html/filter-user.html',
+    templateUrl: '/html/filter-user-host.html',
 
     link: function(scope, elem, attrs) {
 
@@ -16,8 +16,9 @@ FilterUser = ['$http', '$rootScope', 'clientSession', function($http, $rootScope
         }).then(function(res) {
           scope.filterUserSelection = res.data;
 
+          // load remembered user
           if (typeof localStorage.userSelection !== 'undefined') {
-            console.log('load historical selected user')
+            console.log('load historical selected user');
             var i = 0;
             for (; i < scope.filterUserSelection.length; i++) {
               if (parseInt(scope.filterUserSelection[i].id) === parseInt(localStorage.userSelection)) {
@@ -28,24 +29,37 @@ FilterUser = ['$http', '$rootScope', 'clientSession', function($http, $rootScope
           }
 
         }).catch(function(err) {
-          console.error('in getting users', err);
+          console.error('error in getting users', err);
           clientSession.logout();
         });
       }
 
       scope.changeUserFilter = function() {
-        console.log('change user filter', scope.filterUser);
         localStorage.userSelection = scope.filterUser.id;
-        $rootScope.$emit('selectedUser');
+
+        scope.filterHostSelection = scope.filterUser.hosts;
+
+        // uuto select user if only one
+        if (scope.filterUser.hosts.length === 1) {
+          scope.filterHost = scope.filterHostSelection[0];
+          $rootScope.$emit('selectedHost');
+        }
+
+        // $rootScope.$emit('selectedUser');
+
       }
 
+
+      scope.changeHostFilter = function() {
+        $rootScope.$emit('selectedHost');
+      }
+
+
       $rootScope.$on('login', function(ev) {
-        console.log('load users list');
         loadUserList();
       });
 
       if (scope.isLoggedIn()) {
-        console.log('load users list');
         loadUserList();
       }
 
