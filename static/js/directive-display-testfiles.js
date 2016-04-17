@@ -20,6 +20,10 @@ DisplayTestfiles = ['$http', '$rootScope', 'clientSession', function($http, $roo
         scope.files = [];
       });
 
+      $rootScope.$on('clearRepo', function(ev) {
+        scope.files = [];
+      });
+
       $rootScope.$on('repo', function(ev, repo) {
 
         $http.get('/repos/' + repo.id + '/testfiles?whose=' + scope.filterUser.id, {

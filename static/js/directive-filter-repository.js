@@ -10,13 +10,15 @@ FilterRepository = ['$http', '$rootScope', 'clientSession', function($http, $roo
 
       var loadRepoList = function() {
         if (!scope.isLoggedIn()) return;
+        console.log('loadRepoList');
 
-        $http.get('/repos?whose=' + scope.filterUser.id, {
+        $http.get('/repos?whose=' + scope.filterUser.id + '&host=' + scope.filterHost.id, {
           headers: {
             Authorization: clientSession.getApiKey()
           }
         }).then(
           function(res) {
+            console.log('loadRepoList response');
             if (res.status === 200) {
               scope.loadingRepos = '';
               scope.filterRepositorySelection = res.data;
@@ -36,10 +38,38 @@ FilterRepository = ['$http', '$rootScope', 'clientSession', function($http, $roo
         );
       }
 
+      var clearRepoList = function() {
+        console.log('clearRepoList');
+        scope.filterRepositorySelection = undefined;
+        $rootScope.$emit('clearRepo');
+        // scope.$apply();
+      }
+
       $rootScope.$on('selectedUser', function(ev) {
-        console.log('load repo list');
-        loadRepoList();
+        if (scope.filterUser && scope.filterHost) {
+          loadRepoList();
+          return;
+        }
+        clearRepoList();
       });
+
+      $rootScope.$on('selectedHost', function(ev) {
+        if (scope.filterUser && scope.filterHost) {
+          loadRepoList();
+          return;
+        }
+        clearRepoList();
+      });
+
+
+      scope.applyRepoFilter = function() {
+        if (scope.filterRepository === null) {
+          console.log('TODO: clear downward');
+          return;
+        }
+
+        $rootScope.$emit('repo', scope.filterRepository);
+      }
 
 
       // scope.filterRepositorySelection = [];
@@ -81,16 +111,6 @@ FilterRepository = ['$http', '$rootScope', 'clientSession', function($http, $roo
       // $rootScope.$on('login', function() {
       //   scope.loadRepos();
       // });
-
-
-      scope.applyRepoFilter = function() {
-        if (scope.filterRepository === null) {
-          console.log('TODO: clear downward');
-          return;
-        }
-
-        $rootScope.$emit('repo', scope.filterRepository);
-      }
 
 
     }
