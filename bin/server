@@ -142,7 +142,12 @@ app.post('/benchmarks', authenticated(function(req, res, user, conn, done) {
 
 
 app.get('/users', authenticated(function(req, res, user, conn, done) {
-  conn.query('SELECT id, username FROM users ORDER BY username', function(err, result) {
+  conn.query(
+    'SELECT users.id AS user_id, users.username, hosts.id AS hosts_id, hosts.name AS hosts_name ' +
+    'FROM users ' +
+    'INNER JOIN hosts ' +
+    'ON hosts.users_id = users.id ' +
+    'ORDER BY username', function(err, result) {
     done();
 
     if (err) {
@@ -151,8 +156,40 @@ app.get('/users', authenticated(function(req, res, user, conn, done) {
       return res.send(err.stack);
     }
 
+    // reformat to have hosts array in user row
+
+    var rows = [];
+    var map = {};
+
+    result.rows.forEach(function(row, i) {
+      if (typeof map[row.username] !== 'undefined') {
+
+        console.log('another');
+
+        rows[map[row.username]].hosts.push({
+          id: row.hosts_id,
+          name: row.hosts_name,
+        })
+        return;
+      }
+
+      console.log('SEQ', i);
+
+      map[row.username] = i;
+      rows.push({
+        id: row.user_id,
+        username: row.username,
+        hosts: [{
+          id: row.hosts_id,
+          name: row.hosts_name,
+        }]
+      })
+    })
+
+    console.log(JSON.stringify(rows,null,2));
+
     res.statusCode = 200;
-    res.send(result.rows);
+    res.send(rows);
   })
 }));
 
