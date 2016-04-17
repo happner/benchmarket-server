@@ -161,11 +161,9 @@ app.get('/users', authenticated(function(req, res, user, conn, done) {
     var rows = [];
     var map = {};
 
-    result.rows.forEach(function(row, i) {
+    result.rows.forEach(function(row) {
+
       if (typeof map[row.username] !== 'undefined') {
-
-        console.log('another');
-
         rows[map[row.username]].hosts.push({
           id: row.hosts_id,
           name: row.hosts_name,
@@ -173,9 +171,7 @@ app.get('/users', authenticated(function(req, res, user, conn, done) {
         return;
       }
 
-      console.log('SEQ', i);
-
-      map[row.username] = i;
+      map[row.username] = rows.length;
       rows.push({
         id: row.user_id,
         username: row.username,
@@ -185,8 +181,6 @@ app.get('/users', authenticated(function(req, res, user, conn, done) {
         }]
       })
     })
-
-    console.log(JSON.stringify(rows,null,2));
 
     res.statusCode = 200;
     res.send(rows);
@@ -201,9 +195,10 @@ app.get('/repos', authenticated(function(req, res, user, conn, done) {
     'FROM repositories ' +
     'INNER JOIN runs ' +
     'ON repositories.id = runs.repositories_id ' +
-    'AND runs.users_id = $1' +
+    'AND runs.users_id = $1 ' +
+    'AND runs.hosts_id = $2 ' +
     'ORDER BY repositories.name',
-  [req.query.whose], function(err, result) {
+  [req.query.whose, req.query.host], function(err, result) {
     done();
 
     if (err) {
