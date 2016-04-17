@@ -198,7 +198,7 @@ app.get('/repos', authenticated(function(req, res, user, conn, done) {
     'AND runs.users_id = $1 ' +
     'AND runs.hosts_id = $2 ' +
     'ORDER BY repositories.name',
-  [req.query.whose, req.query.host], function(err, result) {
+  [req.query.user, req.query.host], function(err, result) {
     done();
 
     if (err) {
@@ -211,65 +211,16 @@ app.get('/repos', authenticated(function(req, res, user, conn, done) {
     res.send(result.rows);
 
   });
-
-
-  // if (typeof req.query.whose === 'undefined' || req.query.whose === '0') {
-  //   // list only my repositories
-  //   conn.query(
-  //     'SELECT DISTINCT repositories.id, repositories.name ' + // distinct??
-  //     'FROM repositories ' +
-  //     'INNER JOIN runs ' +
-  //     'ON repositories.id = runs.repositories_id ' +
-  //     'AND runs.users_id = $1',
-  //   [user.id], function(err, result) {
-  //     done();
-
-  //     if (err) {
-  //       console.error('error running query', err.stack);
-  //       res.statusCode = 500;
-  //       return res.send(err.stack);
-  //     }
-
-  //     res.statusCode = 200;
-  //     res.send(result.rows);
-
-  //   });
-  // } else if (req.query.whose === '-1') {
-  //   // directly to latest run
-  //   conn.query(
-  //     'SELECT DISTINCT ' +
-  //       'repositories.id, ' +
-  //       'repositories.name, ' +
-  //       'runs.run_ref ' +
-  //     'FROM repositories ' +
-  //     'INNER JOIN runs ' +
-  //     'ON repositories.id = runs.repositories_id ' +
-  //     'AND runs.id IN (' +
-  //       'select id from runs where users_id = $1 order by created_at desc limit 1' +
-  //     ')',
-  //   [user.id], function(err, result) {
-  //     done();
-
-  //     if (err) {
-  //       console.error('error running query', err.stack);
-  //       res.statusCode = 500;
-  //       return res.send(err.stack);
-  //     }
-
-  //     res.statusCode = 200;
-  //     res.send(result.rows);
-
-  //   })
-  // } else {
-
-  //   // per user id not implemented
-
-  // }
 }));
 
 
 app.get('/repos/:repo_id/testfiles', authenticated(function(req, res, user, conn, done) {
-  //////// TODO whose
+
+
+  //////// TODO per user,host
+  // console.log(req.url);
+
+
   conn.query('SELECT * FROM testfiles WHERE repositories_id = $1 ORDER BY testfiles.name',
   [req.params.repo_id],
   function(err, result) {
@@ -288,7 +239,12 @@ app.get('/repos/:repo_id/testfiles', authenticated(function(req, res, user, conn
 
 
 app.get('/testfiles/:testfile_id/tests', authenticated(function(req, res, user, conn, done) {
-  //////// TODO whose
+
+
+  //////// TODO per user,host
+  // console.log(req.url);
+
+
   conn.query('SELECT * FROM tests WHERE testfiles_id = $1 ORDER BY tests.name',
   [req.params.testfile_id],
   function(err, result) {
@@ -330,50 +286,27 @@ app.get('/tests/:test_id/metrics', authenticated(function(req, res, user, conn, 
       break;
   }
 
-  /*
-SELECT
-  users.id as users_id,
-  runs.id as runs_id,
-  metrics.tests_id as test_id,
-  metrics.name as name,
-  metrics.value as value,
-  metrics.created_at as ts
-FROM
-  users
-JOIN
-  runs
-ON
-  users.id = 1
-  AND users.id = runs.users_id
-JOIN
-  metrics
-ON
-  metrics.runs_id = runs.id
-  AND metrics.tests_id = 16
-ORDER BY metrics.name, metrics.created_at
-;
-  */
-
   var query = [
     'SELECT',
-      'metrics.name as name,',
-      'metrics.value as value,',
-      'metrics.tests_id as test_id,',
-      'metrics.created_at as ts',
+    'metrics.name as name,',
+    'metrics.value as value,',
+    'metrics.tests_id as test_id,',
+    'metrics.created_at as ts',
     'FROM users',
     'JOIN runs',
     'ON',
-      'users.id = $1',
-      'AND users.id = runs.users_id',
+    'users.id = $1',
+    'AND users.id = runs.users_id',
+    'AND runs.hosts_id = $2',
     'JOIN metrics',
     'ON',
-      'metrics.runs_id = runs.id',
-      'AND metrics.tests_id = $2',
-    'WHERE metrics.created_at >= $3',
+    'metrics.runs_id = runs.id',
+    'AND metrics.tests_id = $3',
+    'WHERE metrics.created_at >= $4',
     'ORDER BY metrics.name, metrics.created_at'
   ];
 
-  var bind = [req.query.whose, req.params.test_id, startDate.toISOString()];
+  var bind = [req.query.user, req.query.host, req.params.test_id, startDate.toISOString()];
 
   conn.query(query.join(' '), bind, function(err, result) {
     done();

@@ -19,7 +19,7 @@ DisplayMetrics = ['$http', '$rootScope', 'clientSession', '$timeout', function($
         }
 
         if (!hidden) {
-          $http.get('/tests/' + test.id + '/metrics?whose=' + scope.filterUser.id + '&span=' + scope.setSpan, {
+          $http.get('/tests/' + test.id + '/metrics?user=' + scope.filterUser.id + '&host=' + scope.filterHost.id + '&span=' + scope.setSpan, {
             headers: {
               Authorization: clientSession.getApiKey()
             }

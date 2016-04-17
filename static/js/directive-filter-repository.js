@@ -12,7 +12,7 @@ FilterRepository = ['$http', '$rootScope', 'clientSession', function($http, $roo
         if (!scope.isLoggedIn()) return;
         console.log('loadRepoList');
 
-        $http.get('/repos?whose=' + scope.filterUser.id + '&host=' + scope.filterHost.id, {
+        $http.get('/repos?user=' + scope.filterUser.id + '&host=' + scope.filterHost.id, {
           headers: {
             Authorization: clientSession.getApiKey()
           }

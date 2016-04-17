@@ -26,7 +26,7 @@ DisplayTestfiles = ['$http', '$rootScope', 'clientSession', function($http, $roo
 
       $rootScope.$on('repo', function(ev, repo) {
 
-        $http.get('/repos/' + repo.id + '/testfiles?whose=' + scope.filterUser.id, {
+        $http.get('/repos/' + repo.id + '/testfiles?user=' + scope.filterUser.id + '&host=' + scope.filterHost.id, {
           headers: {
             Authorization: clientSession.getApiKey()
           }
