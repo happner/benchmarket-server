@@ -42,6 +42,11 @@ DisplayMetrics = ['$http', '$rootScope', 'clientSession', '$timeout', function($
               });
 
               Object.keys(metrics).forEach(function(key) {
+
+                if (metrics[key].length == 1) {
+                  metrics[key].push(metrics[key][0]);
+                }
+
                 array.push({
                   name: key,
                   values: metrics[key]
