@@ -37,3 +37,5 @@ node_modules
 
 database.json
 !database.json.example
+
+.idea
